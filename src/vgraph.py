@@ -5,10 +5,11 @@
 from math import pow
 from scipy.spatial import ConvexHull
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Grow the obstacles using reflection algorithm
 def load_obstacles():
-    with open('world_obstacles.txt', 'r') as f:
+    with open('../data/world_obstacles.txt', 'r') as f:
         obstacles = []
         # initialize number of objects
         num_obs =  f.readline()
@@ -69,9 +70,25 @@ def grow_obstacles(obstacles):
 
     return grown
 
-obstacles = load_obstacles()
-grown = grow_obstacles(obstacles)
-for i in grown:
-    points = np.array(i)
-    hull = ConvexHull(points)
-    
+def write_grown_obstacles_file(obs):
+    num_obs = len(obs)
+    with open('world_obstacles_grown.txt', 'w') as file:
+        file.write("%d\n" % num_obs)
+        for i in grown:
+            points = np.array(i)
+            hull = ConvexHull(points)
+            hull_points = []
+
+            hull_points = zip(points[hull.vertices,0], points[hull.vertices,1])
+            file.write("%d\n" % len(hull_points))
+            for i in hull_points:
+                file.write("%d " % i[0])
+                file.write("%d"  % i[1])
+                file.write("\n")
+
+            # print len(hull_points),hull_points
+
+if __name__ == "__main__":
+    obstacles = load_obstacles()
+    grown = grow_obstacles(obstacles)
+    write_grown_obstacles_file(grown)
